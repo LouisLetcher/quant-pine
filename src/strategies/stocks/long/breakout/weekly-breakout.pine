@@ -3,7 +3,7 @@
 
 strategy("Stocks | Long | BreakOut Strategy | Weekly", overlay = true)
 
-// Check if the current close price is higher than the highest close price of the previous 20 bars 
+// Check if the current close price is higher than the highest close price of the previous 20 bars
 highestClose = ta.highest(close[1], 20)
 isBreakout = close > highestClose
 
@@ -26,4 +26,4 @@ longprofit = strategy.position_avg_price * (1 + TP)
 // If there is an open position
 if strategy.position_size > 0
     // Exit the position with the specified stop loss and take profit prices
-    strategy.exit("Close", "Long", stop = longstop, limit = longprofit)
+    strategy.exit("Exit", "Long", stop = longstop, limit = longprofit)
