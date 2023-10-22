@@ -1,0 +1,38 @@
+# EditorConfig helps developers define and maintain consistent coding styles between different editors and IDEs
+
+# Top-most EditorConfig file
+root = true
+
+# Set the default charset to UTF-8
+[*]
+charset = utf-8
+
+# Indentation settings
+[*.md]
+indent_style = space
+indent_size = 2
+
+[*.js]
+indent_style = space
+indent_size = 2
+
+[*.css]
+indent_style = space
+indent_size = 2
+
+[*.html]
+indent_style = space
+indent_size = 2
+
+# End of line (EOL) settings
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# Trim trailing whitespaces
+[*]
+trim_trailing_whitespace = true
+
+# Set the maximum line length to 80 characters
+[*.{js,css,html}]
+max_line_length = 80

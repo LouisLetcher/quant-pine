@@ -1,0 +1,15 @@
+# Set default behavior to automatically detect line endings
+* text=auto
+
+# Explicitly declare binary files
+*.png binary
+*.jpg binary
+*.gif binary
+
+# Ignore whitespace differences in certain files
+*.txt -diff
+*.md -diff
+
+# Specify specific merge strategies for certain files
+*.docx merge=word
+*.xlsx merge=xlsx

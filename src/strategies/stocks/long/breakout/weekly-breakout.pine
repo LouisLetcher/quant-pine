@@ -1,0 +1,29 @@
+// Copyright (c) GreenScale. All rights reserved.
+// @version=5
+
+strategy("Stocks | Long | BreakOut Strategy | Weekly", overlay = true)
+
+// Check if the current close price is higher than the highest close price of the previous 20 bars 
+highestClose = ta.highest(close[1], 20)
+isBreakout = close > highestClose
+
+// Calculate the simple moving average of the close price over the last 130 bars
+sma130 = ta.sma(close, 130)
+isAboveSMA = close > sma130
+
+// Enter a long position if both breakout and above SMA conditions are met
+if isBreakout and isAboveSMA
+    strategy.entry("Long", strategy.long)
+
+SL = 0.1 // Stop Loss percentage
+TP = 0.4 // Take Profit percentage
+
+// Calculate the stop loss price as a percentage of the average entry price
+longstop = strategy.position_avg_price * (1 - SL)
+// Calculate the take profit price as a percentage of the average entry price
+longprofit = strategy.position_avg_price * (1 + TP)
+
+// If there is an open position
+if strategy.position_size > 0
+    // Exit the position with the specified stop loss and take profit prices
+    strategy.exit("Close", "Long", stop = longstop, limit = longprofit)

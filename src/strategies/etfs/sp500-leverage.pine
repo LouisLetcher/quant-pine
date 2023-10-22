@@ -1,0 +1,24 @@
+// Copyright (c) GreenScale. All rights reserved.
+// @version=5
+
+strategy("ETFs | LONG | S&P 500 ETF Leverage Strategy | Daily", overlay=true)
+
+// Get the close price of the S&P on the 1D timeframe
+snpClose = request.security("SPX500", "D", close)
+
+// Calculate the 200-day moving average
+ma200 = ta.sma(snpClose, 200)
+
+// Define the buy and sell conditions
+buyCondition = ta.crossover(snpClose, ma200)
+sellCondition = ta.crossunder(snpClose, ma200)
+
+// Plot the moving average on the chart
+plot(ma200, title="200 MA", color=color.blue)
+
+// Create buy and sell signals
+if ta.crossover(snpClose, ma200)
+    strategy.entry("Buy", strategy.long, comment="Buy Signal")
+    
+if ta.crossunder(snpClose, ma200)
+    strategy.close("Buy", comment="Sell Signal")
