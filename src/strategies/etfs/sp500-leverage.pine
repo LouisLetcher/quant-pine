@@ -19,6 +19,6 @@ plot(ma200, title="200 MA", color=color.blue)
 // Create buy and sell signals
 if ta.crossover(snpClose, ma200)
     strategy.entry("Buy", strategy.long, comment="Buy Signal")
-    
+
 if ta.crossunder(snpClose, ma200)
-    strategy.close("Buy", comment="Sell Signal")
+    strategy.close("Exit", comment="Sell Signal")
