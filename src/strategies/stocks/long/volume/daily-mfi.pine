@@ -1,0 +1,38 @@
+// Copyright (c) GreenScale. All rights reserved.
+// Description: Based on https://www.investopedia.com/terms/m/mfi.asp
+//@version=5
+strategy("Stocks | Long | MFI Strategy | Daily", overlay = true)
+
+// Define the length of the Money Flow Index (MFI) calculation
+length = 14
+
+// Define the threshold for the MFI to trigger a long position
+mfi_threshold = 50
+
+// Define the length of the simple moving average (SMA)
+sma_length = 200
+
+// Define the percentage for the stop loss level
+stop_loss_percentage = 0.10
+
+// Define the percentage for the take profit level
+take_profit_percentage = 0.30
+
+// Calculate the Money Flow Index (MFI) using the close price and the defined length
+mfi = ta.mfi(close, length)
+
+// Check if the close price is above the SMA and the MFI is below the threshold to enter a long position
+above_sma = close > ta.sma(close, sma_length)
+
+if mfi < mfi_threshold and above_sma
+    strategy.entry("Long", strategy.long)
+
+// Calculate the stop loss level based on the average entry price and the defined stop loss percentage
+stop_loss = strategy.position_avg_price * (1 - stop_loss_percentage)
+
+// Calculate the take profit level based on the average entry price and the defined take profit percentage
+take_profit = strategy.position_avg_price * (1 + take_profit_percentage)
+
+// If there is an open position, exit the position with the specified stop loss and take profit levels
+if strategy.position_size > 0
+    strategy.exit("Exit", "Long", stop = stop_loss, limit = take_profit)
