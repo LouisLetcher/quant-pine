@@ -1,0 +1,23 @@
+// Copyright (c) GreenScale. All rights reserved.
+// Description: Based on https://www.investopedia.com/terms/b/breakouttrader.asp
+// @version=5
+strategy("Stocks | Long | Bollinger Bands Strategy | Daily", overlay = true)
+
+// Calculating the Bollinger Bands with a period of 10 and standard deviation of 2
+[middle,upper,lower]=ta.bb(close[1],10,2)
+
+// Checking if the previous close price was below the lower Bollinger Band and the current close price is above the 200-day simple moving average
+if close[1]<lower and close>ta.sma(close,200)
+    strategy.entry("Long",strategy.long)
+
+// Setting the stop loss and take profit levels based on percentages
+SL=0.10
+TP=0.40
+
+// Calculating the stop loss and take profit prices for the long position
+longstop=strategy.position_avg_price*(1-SL)
+longprofit=strategy.position_avg_price*(1+TP)
+
+// Exiting the long position if the position size is greater than 0, using the calculated stop loss and take profit prices
+if strategy.position_size>0
+    strategy.exit(id="Exit",stop=longstop,limit=longprofit)

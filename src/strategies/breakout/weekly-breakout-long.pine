@@ -1,7 +1,6 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/b/breakouttrader.asp
 // @version=5
-
 strategy("Stocks | Long | BreakOut Strategy | Weekly", overlay = true)
 
 // Check if the current close price is higher than the highest close price of the previous 20 bars

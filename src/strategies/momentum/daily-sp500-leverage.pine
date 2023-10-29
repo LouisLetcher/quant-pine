@@ -1,7 +1,6 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://aktien-mag.de/the-big-call-magazin/archiv/
 // @version=5
-
 strategy("ETFs | LONG | S&P 500 ETF Leverage Strategy | Daily", overlay=true)
 
 // Get the close price of the S&P on the 1D timeframe
