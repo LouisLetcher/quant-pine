@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/u/ultimateoscillator.asp
 // @version=5
-strategy("Stocks | LONG | Larry Williams Strategy | Daily", overlay=true)
+strategy("Stocks | Long | Larry Williams Strategy | Daily", overlay=true)
 
 // Calculating the Williams Percent Range (WPR) with a period of 10
 x=ta.wpr(10)
