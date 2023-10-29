@@ -1,5 +1,5 @@
 // Copyright (c) GreenScale. All rights reserved.
-// Description: Based on https://www.investopedia.com/terms/b/breakouttrader.asp
+// Description: Based on https://www.investopedia.com/terms/b/bollingerbands.asp
 // @version=5
 strategy("Stocks | Long | Bollinger Bands Strategy | Daily", overlay = true)
 
