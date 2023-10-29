@@ -1,5 +1,5 @@
 // Copyright (c) GreenScale. All rights reserved.
-// Description: Based on https://aktien-mag.de/the-big-call-magazin/archiv/
+// Description: Based on https://www.investopedia.com/terms/u/ultimateoscillator.asp
 // @version=5
 strategy("Stocks | LONG | Larry Williams Strategy | Daily", overlay=true)
 
