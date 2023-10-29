@@ -1,0 +1,23 @@
+// Copyright (c) GreenScale. All rights reserved.
+// Description: Based on https://aktien-mag.de/the-big-call-magazin/archiv/
+// @version=5
+strategy("Stocks | LONG | Larry Williams Strategy | Daily", overlay=true)
+
+// Calculating the Williams Percent Range (WPR) with a period of 10
+x=ta.wpr(10)
+
+// Checking if the WPR value 5 bars ago was less than -95 and the current WPR value is greater than -85
+if x[5]<-95 and x>-85
+    strategy.entry("long", strategy.long)
+
+// Setting the stop loss and take profit levels based on percentages
+SL = 0.10
+TP= 0.30
+
+// Calculating the stop loss and take profit prices for the long position
+longstop=strategy.position_avg_price*(1-SL)
+longprofit=strategy.position_avg_price*(1+TP)
+
+// Exiting the long position if the position size is greater than 0, using the calculated stop loss and take profit prices
+if strategy.position_size>0
+    strategy.exit(id="close",stop=longstop,limit=longprofit)
