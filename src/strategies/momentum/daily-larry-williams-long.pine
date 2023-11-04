@@ -1,23 +1,26 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/u/ultimateoscillator.asp
 // @version=5
-strategy("Stocks | Long | Larry Williams Strategy | Daily", overlay=true)
+strategy("Daily | Long | Larry Williams Strategy", shorttitle="Larry Williams", overlay=true)
 
-// Calculating the Williams Percent Range (WPR) with a period of 10
-x=ta.wpr(10)
+// Inputs for optimization
+wprPeriod = input(10, "WPR Period")
+wprEntryLevel = input(-95, "WPR Entry Level")
+wprExitLevel = input(-85, "WPR Exit Level")
+stopLossPercentage = input(0.20, "Stop Loss Percentage")
+takeProfitPercentage = input(0.30, "Take Profit Percentage")
 
-// Checking if the WPR value 5 bars ago was less than -95 and the current WPR value is greater than -85
-if x[5]<-95 and x>-85
-    strategy.entry("long", strategy.long)
+// Calculating the Williams Percent Range (WPR) with the specified period
+wpr = ta.wpr(wprPeriod)
 
-// Setting the stop loss and take profit levels based on percentages
-SL = 0.10
-TP= 0.30
+// Checking if the WPR value 5 bars ago was less than the entry level and the current WPR value is greater than the exit level
+if wpr[5] < wprEntryLevel and wpr > wprExitLevel
+    strategy.entry("Long", strategy.long)
 
-// Calculating the stop loss and take profit prices for the long position
-longstop=strategy.position_avg_price*(1-SL)
-longprofit=strategy.position_avg_price*(1+TP)
+// Calculating the stop loss and take profit prices based on the average entry price and the specified percentages
+stopLoss = strategy.position_avg_price * (1 - stopLossPercentage)
+takeProfit = strategy.position_avg_price * (1 + takeProfitPercentage)
 
 // Exiting the long position if the position size is greater than 0, using the calculated stop loss and take profit prices
-if strategy.position_size>0
-    strategy.exit(id="close",stop=longstop,limit=longprofit)
+if strategy.position_size > 0
+    strategy.exit(id="Close", stop=stopLoss, limit=takeProfit)

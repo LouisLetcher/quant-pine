@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://aktien-mag.de/the-big-call-magazin/archiv/
 // @version=5
-strategy("ETFs | Long | S&P 500 ETF Leverage Strategy | Daily", overlay=true)
+strategy(title="ETFs | Long | S&P 500 ETF Leverage Strategy | Daily", shorttitle="S&P500 Leverage", overlay=true)
 
 // Get the close price of the S&P on the 1D timeframe
 snpClose = request.security("SPX500", "D", close)
@@ -17,8 +17,7 @@ sellCondition = ta.crossunder(snpClose, ma200)
 plot(ma200, title="200 MA", color=color.blue)
 
 // Create buy and sell signals
-if ta.crossover(snpClose, ma200)
+if (buyCondition)
     strategy.entry("Buy", strategy.long, comment="Buy Signal")
-
-if ta.crossunder(snpClose, ma200)
-    strategy.close("Exit", comment="Sell Signal")
+if (sellCondition)
+    strategy.close("Buy", comment="Sell Signal")
