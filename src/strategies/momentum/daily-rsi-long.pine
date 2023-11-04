@@ -1,10 +1,10 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/r/rsi.asp
 // @version=5
-strategy("Stocks | Long | RSI Strategy | Daily", overlay=true)
+strategy("Daily | Long | RSI Strategy", shorttitle="RSI Strategy", overlay=true)
 
 // Setting the period for calculating the RSI
-rsip = input.int(title="rsi period", defval=5)
+rsip = input(5, "RSI Period")
 
 // Calculating the RSI based on the closing prices over the specified period
 rsiv = ta.rsi(close, rsip)
@@ -15,8 +15,8 @@ if rsiv < 30 and close > ta.sma(close, 150) and close < ta.sma(close, 30)
     strategy.entry("long", strategy.long)
 
 // Setting the stop loss and take profit percentages
-SL = 0.10
-TP = 0.30
+SL = input(0.10, "Stop Loss Percentage")
+TP = input(0.60, "Take Profit Percentage")
 
 // Calculating the stop loss and take profit levels based on the average position price
 longStop = strategy.position_avg_price * (1 - SL)

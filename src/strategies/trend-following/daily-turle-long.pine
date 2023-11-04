@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/articles/trading/08/turtle-trading.asp
 // @version=5
-strategy("Stocks | Long | Turtle Strategy | Daily", overlay=true)
+strategy("Daily | Long | Turtle Trading Strategy", shorttitle="Turtle Trading", overlay=true)
 
 // Checking if the current high is greater than the highest high of the previous 40 periods
 checkB = high > ta.highest(high[1], 40)
@@ -13,8 +13,11 @@ checkS = low < ta.lowest(low[1], 20)
 if (checkB)
     strategy.entry("Long", strategy.long)
 
-// Calculating the Average True Range (ATR) with a period of 14
-atrc = ta.atr(14)
+// Setting the period for calculating the Average True Range (ATR)
+atrPeriod = input(14, "ATR Period")
+
+// Calculating the Average True Range (ATR) with the specified period
+atrc = ta.atr(atrPeriod)
 
 // Tracking the ATR Stop loss
 var float entry_atr = na

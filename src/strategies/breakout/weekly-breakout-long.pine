@@ -1,29 +1,32 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/b/breakouttrader.asp
 // @version=5
-strategy("Stocks | Long | BreakOut Strategy | Weekly", overlay = true)
+strategy("Weekly | Long | BreakOut Strategy", shorttitle="BreakOut", overlay=true)
 
-// Check if the current close price is higher than the highest close price of the previous 20 bars
-highestClose = ta.highest(close[1], 20)
+// Inputs for optimization
+breakoutPeriod = input(20, "Breakout Period")
+smaPeriod = input(130, "SMA Period")
+stopLossPercentage = input(0.1, "Stop Loss Percentage")
+takeProfitPercentage = input(0.4, "Take Profit Percentage")
+
+// Check if the current close price is higher than the highest close price of the previous breakout period bars
+highestClose = ta.highest(close[1], breakoutPeriod)
 isBreakout = close > highestClose
 
-// Calculate the simple moving average of the close price over the last 130 bars
-sma130 = ta.sma(close, 130)
-isAboveSMA = close > sma130
+// Calculate the simple moving average of the close price over the last SMA period bars
+sma = ta.sma(close, smaPeriod)
+isAboveSMA = close > sma
 
 // Enter a long position if both breakout and above SMA conditions are met
 if isBreakout and isAboveSMA
     strategy.entry("Long", strategy.long)
 
-SL = 0.1 // Stop Loss percentage
-TP = 0.4 // Take Profit percentage
-
 // Calculate the stop loss price as a percentage of the average entry price
-longstop = strategy.position_avg_price * (1 - SL)
+longStop = strategy.position_avg_price * (1 - stopLossPercentage)
 // Calculate the take profit price as a percentage of the average entry price
-longprofit = strategy.position_avg_price * (1 + TP)
+longProfit = strategy.position_avg_price * (1 + takeProfitPercentage)
 
 // If there is an open position
 if strategy.position_size > 0
     // Exit the position with the specified stop loss and take profit prices
-    strategy.exit("Exit", "Long", stop = longstop, limit = longprofit)
+    strategy.exit("Exit", "Long", stop=longStop, limit=longProfit)

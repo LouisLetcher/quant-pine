@@ -1,13 +1,13 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/a/adx.asp
 // @version=5
-strategy("Stocks | Long | ADX Strategy | Daily", overlay=true)
+strategy("Daily | Long | ADX Strategy", shorttitle="ADX Strategy", overlay=true)
 
 // Setting the number of days for calculations
-days = input.int(title="days", defval=30)
+days = input.int(title="Days", defval=62)
 
 // Setting the period for the simple moving average (SMA)
-smap = input.int(title="ma period", defval=200)
+smap = input.int(title="MA Period", defval=250)
 
 // Calculating the SMA based on the closing prices over the specified period
 smaval = ta.sma(close, smap)

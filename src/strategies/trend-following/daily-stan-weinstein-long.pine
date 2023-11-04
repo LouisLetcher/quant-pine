@@ -1,0 +1,31 @@
+// Copyright (c) GreenScale. All rights reserved.
+// Description: Based on https://www.investopedia.com/articles/investing/070715/trading-stage-analysis.asp
+// @version=5
+strategy("Daily | Long | Stan Weinstein Strategy", shorttitle="Stan Weinstein", overlay=true)
+
+comparativeTickerId = input.symbol("SPY", title="Comparative Symbol") // Input for comparative symbol
+l = input.int(50, minval=1, title="Period") // Input for period
+
+baseSymbol = request.security(syminfo.tickerid, timeframe.period, close) // Fetching data for base symbol
+comparativeSymbol = request.security(comparativeTickerId, timeframe.period, close) // Fetching data for comparative symbol
+
+hline(0, color=color.black, linestyle=hline.style_dotted) // Horizontal line at 0
+
+res = baseSymbol / baseSymbol[l] /(comparativeSymbol / comparativeSymbol[l]) - 1 // Calculation for relative strength
+plot(res, title="RS", color=#1155CC) // Plotting relative strength
+
+// Volume moving average
+vol_length = input(5, "Volume MA Length") // Input for volume moving average length
+sma_length = input(30, "SMA Length") // Input for SMA length
+consolidation_threshold = input(0, "Consolidation Threshold") // Input for consolidation threshold
+trade_condition_threshold = input(52, "Trade Condition Threshold") // Input for trade condition threshold
+
+vol1 = ta.sma(volume, vol_length) // Calculating volume moving average
+sma1 = ta.sma(close, sma_length) // Calculating SMA for consolidation
+h1 = ta.highest(high[1], trade_condition_threshold) // Finding highest high for trade conditions
+
+if close > sma1 and res > 0 and volume > vol1 and close > h1
+    strategy.entry("long", strategy.long) // Entering long position if conditions are met
+
+if close < sma1
+    strategy.close("long") // Closing long position if conditions are not met
