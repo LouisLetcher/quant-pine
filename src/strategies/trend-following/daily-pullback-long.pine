@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/p/pullback.asp
 // @version=5
-strategy("Daily | Long | Pullback Trading Strategy", shorttitle="Pullback", overlay=true)
+strategy("Pullback Trading Strategy | Long", shorttitle="Pullback", overlay=true)
 
 // Input parameters
 SL = input(0.10, title="Stop Loss %")
@@ -17,4 +17,3 @@ longprofit = strategy.position_avg_price * (1 + TP)
 // For long positions
 if strategy.position_size > 0
     strategy.exit(id = "close", stop = longstop, limit = longprofit)
-

@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/b/breakouttrader.asp
 // @version=5
-strategy("Weekly | Long | BreakOut Strategy", shorttitle="BreakOut", overlay=true)
+strategy("Donchian BreakOut Strategy | Long", shorttitle="BreakOut", overlay=true)
 
 // Inputs for optimization
 breakoutPeriod = input(20, "Breakout Period")

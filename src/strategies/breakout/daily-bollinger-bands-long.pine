@@ -1,26 +1,30 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/b/bollingerbands.asp
 // @version=5
-strategy("Daily | Long | Bollinger Bands Strategy", shorttitle="Bollinger Bands", overlay=true)
+strategy("Bollinger Bands Strategy | Long", overlay = true)
 
-// Inputs
-bbLength = input(10, "Bollinger Bands Length")
-bbDeviation = input(2, "Bollinger Bands Deviation")
-smaLength = input(160, "SMA Length")
-stopLossPercentage = input(0.20, "Stop Loss Percentage")
-takeProfitPercentage = input(0.8, "Take Profit Percentage")
+// Define input variables
+bbPeriod = input(10, title="Bollinger Bands Period")
+bbStdDev = input(2, title="Bollinger Bands Standard Deviation")
+smaPeriod = input(200, title="Simple Moving Average Period")
+stopLossPercentage = input(0.10, title="Stop Loss Percentage")
+takeProfitPercentage = input(0.40, title="Take Profit Percentage")
 
-// Calculating the Bollinger Bands with the specified length and standard deviation
-[middle, upper, lower] = ta.bb(close[1], bbLength, bbDeviation)
+// Calculate the Bollinger Bands with the specified period and standard deviation
+[middle, upper, lower] = ta.bb(close[1], bbPeriod, bbStdDev)
 
-// Checking if the previous close price was below the lower Bollinger Band and the current close price is above the specified SMA length
-if close[1] < lower and close > ta.sma(close, smaLength)
+// Check for entry conditions: previous close below lower Bollinger Band and current close above the specified simple moving average period
+if close[1] < lower and close > ta.sma(close, smaPeriod)
     strategy.entry("Long", strategy.long)
 
-// Calculating the stop loss and take profit prices for the long position based on percentages
-longStop = strategy.position_avg_price * (1 - stopLossPercentage)
-longProfit = strategy.position_avg_price * (1 + takeProfitPercentage)
+// Set stop loss and take profit levels based on percentages
+SL = stopLossPercentage
+TP = takeProfitPercentage
 
-// Exiting the long position if the position size is greater than 0, using the calculated stop loss and take profit prices
+// Calculate stop loss and take profit prices for the long position
+longstop = strategy.position_avg_price * (1 - SL)
+longprofit = strategy.position_avg_price * (1 + TP)
+
+// Exit the long position if position size is greater than 0, using the calculated stop loss and take profit prices
 if strategy.position_size > 0
-    strategy.exit(id="Exit", stop=longStop, limit=longProfit)
+    strategy.exit(id="Exit", stop=longstop, limit=longprofit)

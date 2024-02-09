@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/articles/investing/070715/trading-stage-analysis.asp
 // @version=5
-strategy("Daily | Long | Stan Weinstein Strategy", shorttitle="Stan Weinstein", overlay=true)
+strategy("Stan Weinstein Strategy | Long", shorttitle="Stan Weinstein", overlay=true)
 
 comparativeTickerId = input.symbol("SPY", title="Comparative Symbol") // Input for comparative symbol
 l = input.int(50, minval=1, title="Period") // Input for period

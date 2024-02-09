@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/u/ultimateoscillator.asp
 // @version=5
-strategy("Daily | Long | Larry Williams Strategy", shorttitle="Larry Williams", overlay=true)
+strategy("Larry Williams Strategy | Long", shorttitle="Larry Williams", overlay=true)
 
 // Inputs for optimization
 wprPeriod = input(10, "WPR Period")
