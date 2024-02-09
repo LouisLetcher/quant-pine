@@ -1,10 +1,10 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/m/macd.asp
 // @version=5
-strategy("Daily | Long | MACD Strategy", shorttitle="MACD Strategy", overlay=true)
+strategy("MACD Strategy | Long", shorttitle="MACD Strategy", overlay=true)
 
 // Input parameters that can be optimized
-fastl = input(33, "Fast Length")
+fastl = input(50, "Fast Length")
 slowl = input(75, "Slow Length")
 macdl = input(35, "MACD Length")
 

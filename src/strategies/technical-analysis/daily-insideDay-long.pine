@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/i/inside-days.asp
 // @version=5
-strategy("Daily | Long | Inside Day Strategy", shorttitle="Inside Day", overlay=true)
+strategy("Inside Day Strategy | Long", shorttitle="Inside Day", overlay=true)
 
 // Defining the inside day
 id = high[1] > high and low[1] < low

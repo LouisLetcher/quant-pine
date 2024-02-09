@@ -1,7 +1,7 @@
 // Copyright (c) GreenScale. All rights reserved.
 // Description: Based on https://www.investopedia.com/terms/r/rsi.asp
 // @version=5
-strategy("Daily | Long | RSI Strategy", shorttitle="RSI Strategy", overlay=true)
+strategy("RSI Strategy | Long", shorttitle="RSI Strategy", overlay=true)
 
 // Setting the period for calculating the RSI
 rsip = input(5, "RSI Period")
