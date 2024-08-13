@@ -1,0 +1,49 @@
+//@version=5
+strategy("Money Flow Index Strategy", shorttitle="MFI", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+//@description This script implements a long position strategy based on the Money Flow Index (MFI) and Simple Moving Average (SMA). It enters a long position when the MFI is below a specified threshold and the price is above the SMA, with predefined stop loss and take profit levels.
+//@tags mfi, sma, strategy, trading, stocks
+
+// Input parameters
+var int LENGTH = 14
+var float MFI_THRESHOLD = 50.0
+var int SMA_LENGTH = 200
+var float STOP_LOSS_PERCENTAGE = 0.10
+var float TAKE_PROFIT_PERCENTAGE = 0.30
+
+// Calculate indicators
+float mfi = ta.mfi(close, LENGTH)
+float sma = ta.sma(close, SMA_LENGTH)
+
+// Entry condition
+bool long_condition = mfi < MFI_THRESHOLD and close > sma
+
+// Strategy logic
+if (long_condition)
+    strategy.entry("Long", strategy.long)
+
+// Exit logic
+if (strategy.position_size > 0)
+    float stop_loss = strategy.position_avg_price * (1 - STOP_LOSS_PERCENTAGE)
+    float take_profit = strategy.position_avg_price * (1 + TAKE_PROFIT_PERCENTAGE)
+    strategy.exit("Exit", "Long", stop=stop_loss, limit=take_profit)
+
+// Plotting (optional, for visualization)
+plot(sma, color=color.blue, title="SMA")
+hline(50, color=color.red, linestyle=hline.style_dashed, title="MFI Threshold")
+
+// Debugging and optimization
+if (barstate.islastconfirmedhistory)
+    label.new(bar_index, high, text="MFI: " + str.tostring(mfi, "#.##"), color=color.green, textcolor=color.white, style=label.style_label_down)
+    label.new(bar_index, low, text="Trades: " + str.tostring(strategy.closedtrades), color=color.blue, textcolor=color.white, style=label.style_label_up)
+
+// Performance metrics
+var float max_drawdown = 0.0
+var float profit_factor = 0.0
+
+if (barstate.islastconfirmedhistory)
+    max_drawdown := strategy.max_drawdown
+    profit_factor := strategy.profit_factor
+
+    label.new(bar_index, high, text="Max Drawdown: " + str.tostring(max_drawdown, "#.##%"), color=color.red, textcolor=color.white, style=label.style_label_down)
+    label.new(bar_index, low, text="Profit Factor: " + str.tostring(profit_factor, "#.##"), color=color.green, textcolor=color.white, style=label.style_label_up)

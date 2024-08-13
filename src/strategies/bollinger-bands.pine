@@ -1,0 +1,41 @@
+//@version=5
+strategy("Bollinger Bands Strategy", shorttitle="BB", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+//@description=This script implements a Bollinger Bands strategy for long positions in stocks. It uses Bollinger Bands, SMA, and price comparisons to determine entry and exit points for long positions.
+//@tags=bollinger-bands, sma, strategy, trading, stocks
+
+// Input variables
+var int BB_PERIOD = input.int(10, "Bollinger Bands Period", minval=1)
+var float BB_STD_DEV = input.float(2.0, "Bollinger Bands Standard Deviation", minval=0.1, step=0.1)
+var int SMA_PERIOD = input.int(200, "Simple Moving Average Period", minval=1)
+var float STOP_LOSS_PERCENT = input.float(0.10, "Stop Loss Percentage", minval=0.01, step=0.01)
+var float TAKE_PROFIT_PERCENT = input.float(0.40, "Take Profit Percentage", minval=0.01, step=0.01)
+
+// Calculate indicators
+[middle, upper, lower] = ta.bb(close, BB_PERIOD, BB_STD_DEV)
+sma = ta.sma(close, SMA_PERIOD)
+
+// Entry condition
+bool entryCondition = close[1] < lower and close > sma
+
+// Strategy logic
+if (entryCondition)
+    strategy.entry("Long", strategy.long)
+
+// Exit logic
+float longStop = strategy.position_avg_price * (1 - STOP_LOSS_PERCENT)
+float longProfit = strategy.position_avg_price * (1 + TAKE_PROFIT_PERCENT)
+
+if (strategy.position_size > 0)
+    strategy.exit("Exit", stop=longStop, limit=longProfit)
+
+// Plotting
+plot(upper, "Upper BB", color.new(color.red, 0))
+plot(middle, "Middle BB", color.new(color.blue, 0))
+plot(lower, "Lower BB", color.new(color.red, 0))
+plot(sma, "SMA", color.new(color.green, 0))
+
+// Plot entry and exit points
+plotshape(entryCondition, "Entry Signal", shape.labelup, location.belowbar, color.new(color.green, 0))
+plotshape(strategy.position_size > 0 and close < longStop, "Stop Loss", shape.labeldown, location.abovebar, color.new(color.red, 0))
+plotshape(strategy.position_size > 0 and close > longProfit, "Take Profit", shape.labeldown, location.abovebar, color.new(color.blue, 0))

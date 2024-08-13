@@ -1,0 +1,48 @@
+//@version=5
+strategy("Average Directional Index Strategy", shorttitle="ADX", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+//@description=This script implements an ADX (Average Directional Index) strategy for stocks. It uses ADX, SMA, and price comparisons to determine entry and exit points for long positions.
+//@tags=adx, sma, strategy, trading, stocks
+
+// Input settings
+var int DAYS = input.int(title="Number of Days", defval=30, minval=1)
+var int SMA_PERIOD = input.int(title="MA Period", defval=200, minval=1)
+
+// Calculating indicators
+sma_value = ta.sma(close, SMA_PERIOD)
+[diplus, diminus, adx] = ta.dmi(5, 5)
+
+// Entry and exit conditions
+long_condition = close > close[DAYS] and adx > 50 and close > sma_value
+exit_condition = close < sma_value
+
+// Strategy execution
+if (long_condition)
+    strategy.entry("Long", strategy.long)
+
+if (exit_condition)
+    strategy.close("Long")
+
+// Plotting
+plot(sma_value, title="SMA", color=color.blue)
+plot(adx, title="ADX", color=color.red)
+
+// Debugging: Adding labels for entry and exit points
+if (long_condition)
+    label.new(bar_index, low, text="Long Entry", style=label.style_label_up, color=color.green, textcolor=color.white)
+if (exit_condition)
+    label.new(bar_index, high, text="Exit", style=label.style_label_down, color=color.red, textcolor=color.white)
+
+// Profiling and optimization: Adding performance metrics
+var float total_trades = na
+var float win_trades = na
+var float loss_trades = na
+
+if (strategy.closedtrades > 0)
+    total_trades := strategy.closedtrades
+    win_trades := strategy.wintrades
+    loss_trades := strategy.losstrades
+
+plot(total_trades, title="Total Trades", color=color.yellow)
+plot(win_trades, title="Winning Trades", color=color.green)
+plot(loss_trades, title="Losing Trades", color=color.red)

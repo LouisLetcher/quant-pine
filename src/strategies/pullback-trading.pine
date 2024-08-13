@@ -1,0 +1,31 @@
+//@version=5
+strategy("Pullback Trading Strategy", shorttitle="Pullback", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+//@description This script implements a pullback trading strategy. It enters a long position when the close price is above the 200-period simple moving average (SMA) and below the 50-period SMA. It exits the position based on a stop loss or take profit percentage.
+//@tags pullback, sma, strategy, trading, stocks
+
+// Input parameters
+var float SL = input.float(0.10, "Stop Loss %", minval=0.01, maxval=1.0, step=0.01)
+var float TP = input.float(0.30, "Take Profit %", minval=0.01, maxval=1.0, step=0.01)
+
+// Calculate SMAs
+var float sma200 = ta.sma(close, 200)
+var float sma50 = ta.sma(close, 50)
+
+// Entry condition
+if close > sma200 and close < sma50
+    strategy.entry("long", strategy.long)
+
+// Exit conditions
+if strategy.position_size > 0
+    var float longstop = strategy.position_avg_price * (1 - SL)
+    var float longprofit = strategy.position_avg_price * (1 + TP)
+    strategy.exit("close", "long", stop=longstop, limit=longprofit)
+
+// Plot SMAs for visual reference
+plot(sma200, color=color.blue, title="200 SMA")
+plot(sma50, color=color.red, title="50 SMA")
+
+// Add labels for better visualization
+if strategy.position_size > 0
+    label.new(bar_index, high, text="Long", color=color.green, style=label.style_label_down)
