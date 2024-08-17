@@ -1,0 +1,39 @@
+//@version=5
+indicator(title="Connors Relative Strength Index", shorttitle="CRSI", format=format.price, precision=2, timeframe="", timeframe_gaps=true)
+
+//@description=This script implements the Connors Relative Strength Index indicator for stocks. It combines three components: RSI, Up/Down RSI, and Percent Rank of ROC to form the Connors RSI, which is used to determine overbought or oversold conditions.
+//@tags=connorsrsi, rsi, trading, stocks, strategy
+
+// Input parameters
+src = close  // Source for calculations, usually the closing price
+lenrsi = input(3, "RSI Length")  // Length of the RSI calculation
+lenupdown = input(2, "UpDown Length")  // Length for the up/down RSI calculation
+lenroc = input(100, "ROC Length")  // Length for the Percent Rank calculation based on Rate of Change (ROC)
+
+// Function to calculate the up/down sequence
+updown(s) =>
+    var float ud = na  // Initialize the ud variable with 'na' to ensure it's reset on first execution
+    if (s == s[1])  // If the current value is equal to the previous value
+        ud := 0
+    else if (s > s[1])  // If the current value is greater than the previous value
+        ud := na(ud[1]) or ud[1] <= 0 ? 1 : ud[1] + 1
+    else  // If the current value is less than the previous value
+        ud := na(ud[1]) or ud[1] >= 0 ? -1 : ud[1] - 1
+    ud
+
+// Calculate the individual components of Connors RSI
+rsi = ta.rsi(src, lenrsi)  // Standard RSI
+updownrsi = ta.rsi(updown(src), lenupdown)  // RSI based on the up/down sequence
+percentrank = ta.percentrank(ta.roc(src, 1), lenroc)  // Percent Rank of the Rate of Change (ROC)
+
+// Combine the three components to form the Connors RSI
+crsi = math.avg(rsi, updownrsi, percentrank)
+
+// Plot the Connors RSI
+plot(crsi, "CRSI", color = #2962FF)
+
+// Draw horizontal lines and background fill
+band1 = hline(70, "Upper Band", color = #787B86)
+hline(50, "Middle Band", color=color.new(#787B86, 50))
+band0 = hline(30, "Lower Band", color = #787B86)
+fill(band1, band0, color.rgb(33, 150, 243, 90), title = "Background")
