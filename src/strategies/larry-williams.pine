@@ -1,0 +1,35 @@
+//@version=5
+strategy("Larry Williams Strategy", shorttitle="Larry Williams", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+//@description=This script implements a Larry Williams strategy for long positions in stocks. It uses the Williams Percent Range (WPR) to identify entry and exit points.
+//@tags=larry-williams, wpr, strategy, trading, stocks
+
+// Input parameters
+wprPeriod = input.int(10, "WPR Period", minval=1, maxval=100)
+wprEntryLevel = input.float(-95, "WPR Entry Level", step=0.1)
+wprExitLevel = input.float(-85, "WPR Exit Level", step=0.1)
+stopLossPercentage = input.float(0.20, "Stop Loss Percentage", step=0.01)
+takeProfitPercentage = input.float(0.30, "Take Profit Percentage", step=0.01)
+
+// Calculate Williams Percent Range (WPR)
+wpr = ta.wpr(wprPeriod)
+
+// Entry condition
+entryCondition = wpr[5] < wprEntryLevel and wpr > wprExitLevel
+
+// Execute long entry
+if (entryCondition)
+    strategy.entry("Long", strategy.long)
+
+// Calculate stop loss and take profit prices
+stopLoss = strategy.position_avg_price * (1 - stopLossPercentage)
+takeProfit = strategy.position_avg_price * (1 + takeProfitPercentage)
+
+// Exit position
+if (strategy.position_size > 0)
+    strategy.exit(id="Close", stop=stopLoss, limit=takeProfit)
+
+// Plot WPR for visualization
+plot(wpr, "WPR", color=color.blue, linewidth=2)
+hline(wprEntryLevel, "Entry Level", color=color.green)
+hline(wprExitLevel, "Exit Level", color=color.red)

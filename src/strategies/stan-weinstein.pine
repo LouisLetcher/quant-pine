@@ -1,0 +1,41 @@
+//@version=5
+strategy("Stan Weinstein Strategy", shorttitle="Stan Weinstein", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+//@description This script implements the Stan Weinstein strategy, which is a trend-following strategy that uses relative strength and moving averages to identify potential trading opportunities.
+//@tags stan-weinstein, relative-strength, moving-average, trend-following, strategy
+
+// Input parameters
+comparativeTickerId = input.symbol("SPY", title="Comparative Symbol")
+l = input.int(50, minval=1, title="Period")
+vol_length = input(5, "Volume MA Length")
+sma_length = input(30, "SMA Length")
+trade_condition_threshold = input(52, "Trade Condition Threshold")
+
+// Fetch data
+baseSymbol = request.security(syminfo.tickerid, timeframe.period, close)
+comparativeSymbol = request.security(comparativeTickerId, timeframe.period, close)
+
+// Calculate relative strength
+res = baseSymbol / baseSymbol[l] / (comparativeSymbol / comparativeSymbol[l]) - 1
+
+// Calculate moving averages
+vol_ma = ta.sma(volume, vol_length)
+price_sma = ta.sma(close, sma_length)
+
+// Find highest high for trade conditions
+h1 = ta.highest(high[1], trade_condition_threshold)
+
+// Entry and exit conditions
+long_entry_condition = close > price_sma and res > 0 and volume > vol_ma and close > h1
+exit_condition = close < price_sma
+
+// Strategy execution
+if (long_entry_condition)
+    strategy.entry("Long", strategy.long)
+
+if (exit_condition)
+    strategy.close("Long")
+
+// Plotting
+plot(res, title="RS", color=#1155CC)
+hline(0, color=color.new(color.black, 50), linestyle=hline.style_dotted)
