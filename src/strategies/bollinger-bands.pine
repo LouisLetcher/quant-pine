@@ -5,14 +5,14 @@ strategy("Bollinger Bands Strategy", shorttitle="BB", overlay=true, default_qty_
 //@tags=bollinger-bands, sma, strategy, trading, stocks
 
 // Input variables
-var int BB_PERIOD = input.int(10, "Bollinger Bands Period", minval=1)
-var float BB_STD_DEV = input.float(2.0, "Bollinger Bands Standard Deviation", minval=0.1, step=0.1)
-var int SMA_PERIOD = input.int(200, "Simple Moving Average Period", minval=1)
-var float STOP_LOSS_PERCENT = input.float(0.10, "Stop Loss Percentage", minval=0.01, step=0.01)
-var float TAKE_PROFIT_PERCENT = input.float(0.40, "Take Profit Percentage", minval=0.01, step=0.01)
+var int BB_PERIOD = input.int(10, "Bollinger Bands Period")
+var float BB_STD_DEV = input.float(2.0, "Bollinger Bands Standard Deviation")
+var int SMA_PERIOD = input.int(200, "Simple Moving Average Period")
+var float STOP_LOSS_PERCENT = input.float(0.10, "Stop Loss Percentage")
+var float TAKE_PROFIT_PERCENT = input.float(0.40, "Take Profit Percentage")
 
 // Calculate indicators
-[middle, upper, lower] = ta.bb(close, BB_PERIOD, BB_STD_DEV)
+[middle, upper, lower] = ta.bb(close[1], BB_PERIOD, BB_STD_DEV)
 sma = ta.sma(close, SMA_PERIOD)
 
 // Entry condition

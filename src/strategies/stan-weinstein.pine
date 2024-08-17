@@ -7,12 +7,13 @@ strategy("Stan Weinstein Strategy", shorttitle="Stan Weinstein", overlay=true, d
 // Input parameters
 comparativeTickerId = input.symbol("SPY", title="Comparative Symbol")
 l = input.int(50, minval=1, title="Period")
-vol_length = input.int(5, "Volume MA Length")
-sma_length = input.int(30, "SMA Length")
-trade_condition_threshold = input.int(52, "Trade Condition Threshold")
+vol_length = input(5, "Volume MA Length")
+sma_length = input(30, "SMA Length")
+trade_condition_threshold = input(52, "Trade Condition Threshold")
 
 // Fetch data
-[baseSymbol, comparativeSymbol] = request.security_lower_tf(syminfo.tickerid + "," + comparativeTickerId, timeframe.period, [close, close])
+baseSymbol = request.security(syminfo.tickerid, timeframe.period, close)
+comparativeSymbol = request.security(comparativeTickerId, timeframe.period, close)
 
 // Calculate relative strength
 res = baseSymbol / baseSymbol[l] / (comparativeSymbol / comparativeSymbol[l]) - 1
@@ -38,30 +39,3 @@ if (exit_condition)
 // Plotting
 plot(res, title="RS", color=#1155CC)
 hline(0, color=color.new(color.black, 50), linestyle=hline.style_dotted)
-
-// Add labels for better visualization
-if (long_entry_condition)
-    label.new(bar_index, low, "Buy", color=color.green, textcolor=color.white, style=label.style_label_up)
-
-if (exit_condition)
-    label.new(bar_index, high, "Sell", color=color.red, textcolor=color.white, style=label.style_label_down)
-
-// Performance metrics
-var float max_drawdown = 0.0
-var float total_return = 0.0
-
-strategy.closed_entry_price := strategy.closedtrades.entry_price(strategy.closedtrades - 1)
-strategy.closed_exit_price := strategy.closedtrades.exit_price(strategy.closedtrades - 1)
-
-if (strategy.closedtrades > 0)
-    trade_return = (strategy.closed_exit_price - strategy.closed_entry_price) / strategy.closed_entry_price
-    total_return := total_return + trade_return
-    max_drawdown := math.max(max_drawdown, trade_return < 0 ? math.abs(trade_return) : 0)
-
-// Display performance metrics
-if (barstate.islast)
-    table.new(position = position.bottom_right, columns = 2, rows = 2, border_width = 1)
-    table.cell(table_id = table.new(position = position.bottom_right, columns = 2, rows = 2, border_width = 1), column = 0, row = 0, text = "Total Return")
-    table.cell(table_id = table.new(position = position.bottom_right, columns = 2, rows = 2, border_width = 1), column = 1, row = 0, text = str.tostring(total_return * 100, "#.##") + "%")
-    table.cell(table_id = table.new(position = position.bottom_right, columns = 2, rows = 2, border_width = 1), column = 0, row = 1, text = "Max Drawdown")
-    table.cell(table_id = table.new(position = position.bottom_right, columns = 2, rows = 2, border_width = 1), column = 1, row = 1, text = str.tostring(max_drawdown * 100, "#.##") + "%")

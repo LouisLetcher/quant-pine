@@ -33,13 +33,3 @@ if (strategy.position_size > 0)
 plot(sma150, color=color.blue, title="150 SMA")
 plot(sma30, color=color.red, title="30 SMA")
 plot(rsi, color=color.purple, title="RSI")
-
-// Add labels for better visualization
-if (longCondition)
-    label.new(bar_index, low, text="Long", color=color.green, textcolor=color.white, style=label.style_label_up)
-
-// Tooltip to display current values
-tooltip = "RSI: " + str.tostring(rsi, "#.##") + "\n" +
-          "150 SMA: " + str.tostring(sma150, "#.##") + "\n" +
-          "30 SMA: " + str.tostring(sma30, "#.##")
-label.new(bar_index, high, tooltip, yloc=yloc.abovebar, color=color.navy, textcolor=color.white, style=label.style_label_down)

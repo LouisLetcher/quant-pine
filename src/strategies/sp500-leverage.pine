@@ -27,21 +27,3 @@ if (buyCondition)
 
 if (sellCondition)
     strategy.close("Buy", comment="Sell Signal")
-
-// Add strategy performance metrics
-var float max_drawdown = 0.0
-var float current_drawdown = 0.0
-var float peak_equity = strategy.equity
-
-if (strategy.equity > peak_equity)
-    peak_equity := strategy.equity
-    current_drawdown := 0.0
-else
-    current_drawdown := (peak_equity - strategy.equity) / peak_equity * 100
-
-if (current_drawdown > max_drawdown)
-    max_drawdown := current_drawdown
-
-// Display performance metrics
-if (barstate.islastconfirmedhistory)
-    label.new(bar_index, high, text="Max Drawdown: " + str.tostring(max_drawdown, "#.##") + "%\nTotal Return: " + str.tostring((strategy.netprofit / strategy.initial_capital) * 100, "#.##") + "%", style=label.style_label_down, color=color.blue)

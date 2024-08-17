@@ -4,13 +4,18 @@ strategy("Inside Days Strategy", shorttitle="Inside Days", overlay=true, default
 //@description=This script implements an Inside Day strategy for long positions in stocks. It identifies inside day patterns and uses RSI for exit conditions. The strategy enters a long position when an inside day is detected and exits based on an RSI threshold.
 //@tags=inside-day, rsi, strategy, trading, stocks
 
-// Inputs
-var int rsiLength = input.int(10, minval=1, maxval=50, title="RSI Length")
-var int rsiThreshold = input.int(76, minval=50, maxval=100, title="RSI Threshold")
+// Defining the inside day
+// The inside day is defined as a condition where the previous day's high is greater than the current day's high
+// and the previous day's low is lower than the current day's low.
+id = high[1] > high and low[1] < low
 
-// Calculations
-var bool id = ta.highest(high[1], 1) > high and ta.lowest(low[1], 1) < low
-var float rsiv = ta.rsi(close, rsiLength)
+// Inputs
+rsiLength = input(10, "RSI Length")
+rsiThreshold = input(76, "RSI Threshold")
+
+// Preparing exit condition
+// Calculating the RSI indicator based on the closing prices with the specified length.
+rsiv = ta.rsi(close, rsiLength)
 
 // Strategy logic
 if (id)
@@ -22,7 +27,3 @@ if (rsiv > rsiThreshold)
 // Plotting
 plot(rsiv, "RSI", color=color.blue)
 hline(rsiThreshold, "RSI Threshold", color=color.red)
-
-// Alerts
-alertcondition(id, title="Inside Day Detected", message="An inside day pattern has been detected")
-alertcondition(rsiv > rsiThreshold, title="RSI Exit Signal", message="RSI has crossed above the threshold")

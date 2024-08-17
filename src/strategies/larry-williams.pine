@@ -33,16 +33,3 @@ if (strategy.position_size > 0)
 plot(wpr, "WPR", color=color.blue, linewidth=2)
 hline(wprEntryLevel, "Entry Level", color=color.green)
 hline(wprExitLevel, "Exit Level", color=color.red)
-
-// Add labels for better visualization
-if (entryCondition)
-    label.new(bar_index, low, "Entry", color=color.green, style=label.style_label_up, textcolor=color.white)
-
-if (strategy.position_size == 0 and strategy.closedtrades > 0)
-    label.new(bar_index, high, "Exit", color=color.red, style=label.style_label_down, textcolor=color.white)
-
-// Strategy properties
-strategy.risk.max_intraday_filled_orders(10)
-strategy.risk.max_position_size(1000000, currency.USD)
-strategy.commission.cash_per_contract(0.01)
-strategy.commission.percent(0.1)

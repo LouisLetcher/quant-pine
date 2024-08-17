@@ -5,10 +5,10 @@ strategy("Donchian Breakout Strategy", shorttitle="DonchainBO", overlay=true, de
 //@tags=donchian, sma, strategy, trading, breakout
 
 // Input parameters
-var int BREAKOUT_PERIOD = input.int(20, "Breakout Period", minval=1, maxval=100)
-var int SMA_PERIOD = input.int(130, "SMA Period", minval=1, maxval=200)
-var float STOP_LOSS_PERCENT = input.float(0.1, "Stop Loss %", minval=0.01, maxval=0.5, step=0.01) / 100
-var float TAKE_PROFIT_PERCENT = input.float(0.4, "Take Profit %", minval=0.01, maxval=1.0, step=0.01) / 100
+var int BREAKOUT_PERIOD = input.int(20, "Breakout Period")
+var int SMA_PERIOD = input.int(130, "SMA Period")
+var float STOP_LOSS_PERCENT = input.float(0.1, "Stop Loss %")
+var float TAKE_PROFIT_PERCENT = input.float(0.4, "Take Profit %")
 
 // Calculate indicators
 float highestClose = ta.highest(close[1], BREAKOUT_PERIOD)
@@ -32,10 +32,3 @@ if (strategy.position_size > 0)
 // Plotting
 plot(sma, "SMA", color=color.blue)
 plot(highestClose, "Highest Close", color=color.red)
-
-// Add labels for better visualization
-if (isBreakout and isAboveSMA)
-    label.new(bar_index, high, "Entry", color=color.green, style=label.style_labeldown, textcolor=color.white)
-
-if (strategy.position_size == 0 and strategy.closedtrades > 0)
-    label.new(bar_index, low, "Exit", color=color.red, style=label.style_labelup, textcolor=color.white)
