@@ -1,0 +1,28 @@
+//@version=5
+strategy("Overnight Trading Strategy - Variant 1", shorttitle="OTS V1", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+//@description=This script implements the "Overnight Trading Strategy - Variant 1 (OTS V1)" which identifies oversold conditions based on three consecutive days of lower closes. The strategy enters a long position at the close of the third day and exits at the next day's open, aiming to capitalize on short-term rebounds.
+//@tags=overnight-trading, price-action, strategy, short-term, trading, risk-management
+
+// Entry condition: 3 consecutive days of lower closes
+entry_condition = close[2] > close[1] and close[1] > close
+
+// Entry logic
+if entry_condition
+    strategy.entry("Overnight Long", strategy.long)
+
+// Exit logic: Exit at the next day's open
+if strategy.position_size > 0
+    strategy.close("Overnight Long")
+
+// Plotting entry and exit signals
+var float entry_signal = na
+var float exit_signal = na
+
+if entry_condition
+    entry_signal := close
+if strategy.position_size > 0 and not na(strategy.closedtrades)
+    exit_signal := open
+
+plotshape(entry_signal, title="Entry Signal", location=location.belowbar, color=color.green, style=shape.labelup, text="BUY")
+plotshape(exit_signal, title="Exit Signal", location=location.abovebar, color=color.red, style=shape.labeldown, text="SELL")
