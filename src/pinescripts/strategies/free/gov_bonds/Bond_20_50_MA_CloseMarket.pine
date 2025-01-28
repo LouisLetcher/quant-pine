@@ -1,0 +1,56 @@
+//@version=6
+//@desc 20-day vs. 50-day MA crossover on bond futures (e.g., T-Note); capture longer-term interest rate trends.
+strategy(title = 'Gov. Bond 20 vs. 50 MA Crossover with Market Close', shorttitle = 'Bond_20_50_MA_CloseMarket', overlay = true, default_qty_type = strategy.percent_of_equity)
+
+// === INPUTS ===
+maLengthFast = input.int(20, 'Fast MA Length (days)')
+maLengthSlow = input.int(50, 'Slow MA Length (days)')
+maType = input.string('SMA', title = 'Moving Average Type', options = ['SMA', 'EMA', 'WMA', 'SMMA'])
+
+// === FUNCTION TO GET THE CHOSEN MA TYPE ===
+f_getMA(source, length, type) =>
+    switch type
+        'SMA' => ta.sma(source, length)
+        'EMA' => ta.ema(source, length)
+        'WMA' => ta.wma(source, length)
+        'SMMA' => ta.rma(source, length)
+
+// === CALCULATE MOVING AVERAGES ===
+maFast = f_getMA(close, maLengthFast, maType)
+maSlow = f_getMA(close, maLengthSlow, maType)
+
+// === PLOT MOVING AVERAGES ===
+plot(maFast, color = color.new(color.teal, 0), linewidth = 2, title = 'Fast MA (20)')
+plot(maSlow, color = color.new(color.orange, 0), linewidth = 2, title = 'Slow MA (50)')
+
+// === CROSSOVER CONDITIONS ===
+longCondition = ta.crossover(maFast, maSlow) // 20 crosses above 50
+shortCondition = ta.crossunder(maFast, maSlow) // 20 crosses below 50
+
+//----------------------------------------------------------------------------------------
+// STRATEGY LOGIC: CLOSE AT MARKET AND THEN ENTER OPPOSITE POSITION
+//----------------------------------------------------------------------------------------
+
+// If a SHORT signal occurs (20 crosses below 50):
+//   1) Close any existing Long position at market.
+//   2) Open a new Short position.
+if shortCondition
+    strategy.close('Long Entry', comment = 'Close Long at Market')
+    strategy.entry('Short Entry', strategy.short)
+
+// If a LONG signal occurs (20 crosses above 50):
+//   1) Close any existing Short position at market.
+//   2) Open a new Long position.
+if longCondition
+    strategy.close('Short Entry', comment = 'Close Short at Market')
+    strategy.entry('Long Entry', strategy.long)
+
+// === OPTIONAL ALERTS ===
+if longCondition
+    alert('20 MA crossed above 50 MA - potential LONG opportunity', alert.freq_once_per_bar)
+if shortCondition
+    alert('20 MA crossed below 50 MA - potential SHORT opportunity', alert.freq_once_per_bar)
+
+// === OPTIONAL PLOT SHAPES FOR ENTRIES/EXITS ===
+//plotshape(longCondition,  title="Long Entry Signal",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.green, 0), size=size.tiny)
+//plotshape(shortCondition, title="Short Entry Signal", style=shape.triangledown, location=location.abovebar, color=color.new(color.red, 0),   size=size.tiny)
