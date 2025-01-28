@@ -1,0 +1,92 @@
+//@version=6
+//@description=Long one maturity (e.g., 5Y), short another (e.g., 10Y) anticipating changes in the yield curve spread.
+strategy(title="Yield Curve Spread (5Y vs. 10Y) MA Crossover", 
+     shorttitle="5Y_10Y_Spread_MA",
+     overlay=false,    // We'll display the spread as a separate chart
+     default_qty_type=strategy.percent_of_equity,
+     default_qty_value=100,
+     initial_capital=10000)
+
+// ========== INPUTS ==========
+symbol5Y  = input.symbol("FRED:DGS5",     "5Y Yield Symbol")    // <-- Replace with your data feed symbol 
+symbol10Y = input.symbol("FRED:DGS10",    "10Y Yield Symbol")   // <-- Replace with your data feed symbol
+
+maLengthFast = input.int(20,  "Fast MA Length (days)")
+maLengthSlow = input.int(50,  "Slow MA Length (days)")
+maType       = input.string("SMA", "Moving Average Type", options=["SMA","EMA","WMA","SMMA"])
+
+// ========== FETCH 5Y & 10Y DATA ==========
+// 'security()' calls may need a specific resolution like "D" for daily or "W" for weekly,
+// or you can try timeframe.period to match the chart.
+// Adjust as needed for your strategy or TradingView environment.
+f5y  = request.security(symbol5Y,  timeframe.period, close, lookahead=barmerge.lookahead_on)
+f10y = request.security(symbol10Y, timeframe.period, close, lookahead=barmerge.lookahead_on)
+
+// ========== DEFINE THE SPREAD ==========
+// For example: Spread = 5Y yield - 10Y yield
+spread = f5y - f10y
+
+// ========== FUNCTION TO GET THE CHOSEN MA TYPE ==========
+f_getMA(source, length, type) =>
+    switch type
+        "SMA"  => ta.sma(source, length)
+        "EMA"  => ta.ema(source, length)
+        "WMA"  => ta.wma(source, length)
+        "SMMA" => ta.rma(source, length)
+
+// ========== CALCULATE MOVING AVERAGES ON THE SPREAD ==========
+maFast = f_getMA(spread, maLengthFast, maType)
+maSlow = f_getMA(spread, maLengthSlow, maType)
+
+// ========== PLOT THE SPREAD AND MAs FOR VISUAL DEBUGGING ==========
+plot(spread, "Yield Spread (5Y - 10Y)", color=color.new(color.white, 0), linewidth=2)
+plot(maFast, "Fast MA", color=color.new(color.teal, 0), linewidth=2)
+plot(maSlow, "Slow MA", color=color.new(color.orange, 0), linewidth=2)
+
+// ========== CROSSOVER SIGNALS (on the spread) ==========
+//  longSpreadCondition:   If short-term MA crosses above long-term MA, we expect the 5Y yield to increase 
+//                         relative to 10Y yield (spread widens). 
+//                         => "Go Long the 5Y / Short the 10Y" (bullish spread).
+//
+//  shortSpreadCondition:  If short-term MA crosses below the long-term MA, we expect 5Y yield to underperform 
+//                         or the spread to tighten. 
+//                         => "Go Short the 5Y / Long the 10Y" (bearish spread).
+longSpreadCondition  = ta.crossover(maFast, maSlow)
+shortSpreadCondition = ta.crossunder(maFast, maSlow)
+
+// ========== STRATEGY EXECUTION LOGIC ==========
+//
+//  In a real multi-instrument environment, you’d place 2 trades:
+//   1) Buy 5Y Futures (or the 5Y yield derivative) 
+//   2) Sell 10Y Futures
+//  or vice versa for short.
+//
+//  PineScript can’t literally hold two positions in two different tickers in one chart. 
+//  We’ll just illustrate the logic: you can track if you're “spread-long” or “spread-short” 
+//  by using strategy.entry with different IDs.
+//
+//  The lines below are conceptual: 
+//     - "Spread Long" means: Long the 5Y / Short the 10Y 
+//     - "Spread Short" means: Short the 5Y / Long the 10Y
+
+// Close existing positions if an opposite signal arrives:
+if shortSpreadCondition
+    // close "Spread Long" position, then open "Spread Short"
+    strategy.close("Long", comment="Close Long")
+    strategy.entry("Short", strategy.short)
+
+if longSpreadCondition
+    // close "Spread Short" position, then open "Spread Long"
+    strategy.close("Short", comment="Close Short")
+    strategy.entry( "Long", strategy.long)
+
+// ========== OPTIONAL ALERTS ==========
+if longSpreadCondition
+    alert("Spread turned bullish (MAFast > MASlow). Potential Long 5Y / Short 10Y.", alert.freq_once_per_bar)
+
+if shortSpreadCondition
+    alert("Spread turned bearish (MAFast < MASlow). Potential Short 5Y / Long 10Y.", alert.freq_once_per_bar)
+
+// ========== OPTIONAL VISUAL SIGNALS ==========
+//plotshape(longSpreadCondition,  style=shape.triangleup,   location=location.belowbar, color=color.new(color.green,  0), size=size.tiny, title="Spread LONG Signal")
+//plotshape(shortSpreadCondition, style=shape.triangledown, location=location.abovebar, color=color.new(color.red,    0), size=size.tiny, title="Spread SHORT Signal")
