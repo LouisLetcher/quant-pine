@@ -1,5 +1,5 @@
 //@version=6
-//@desc 20-day vs. 50-day MA crossover on bond futures (e.g., T-Note); capture longer-term interest rate trends.
+//@desc=20-day vs. 50-day MA crossover on bond futures (e.g., T-Note); capture longer-term interest rate trends.
 strategy(title = 'Gov. Bond 20 vs. 50 MA Crossover with Market Close', shorttitle = 'Bond_20_50_MA_CloseMarket', overlay = true, default_qty_type = strategy.percent_of_equity)
 
 // === INPUTS ===
