@@ -1,11 +1,11 @@
 //@version=6
-//@desc=Long one maturity (e.g., 5Y), short another (e.g., 10Y) anticipating changes in the yield curve spread.
+//@description=Long one maturity (e.g., 5Y), short another (e.g., 10Y) anticipating changes in the yield curve spread.
 strategy(title="Yield Curve Spread (5Y vs. 10Y) MA Crossover", 
      shorttitle="5Y_10Y_Spread_MA",
      overlay=false,    // We'll display the spread as a separate chart
      default_qty_type=strategy.percent_of_equity,
      default_qty_value=100,
-     initial_capital=100000)
+     initial_capital=10000)
 
 // ========== INPUTS ==========
 symbol5Y  = input.symbol("FRED:DGS5",     "5Y Yield Symbol")    // <-- Replace with your data feed symbol 
