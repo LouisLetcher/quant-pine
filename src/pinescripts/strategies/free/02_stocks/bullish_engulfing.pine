@@ -1,0 +1,31 @@
+//@version=6
+strategy("Stocks - Bullish Engulfing", shorttitle = "Stocks - Bull. Eng.", overlay=true, default_qty_type = strategy.percent_of_equity, default_qty_value= 100)
+
+//-------------------------------------------
+// User Inputs
+//-------------------------------------------
+rsiLength        = input.int(2,   title="RSI Length",          minval=1)
+rsiExitThreshold = input.float(90, title="RSI Exit Threshold", minval=1, maxval=100)
+
+//-------------------------------------------
+// Conditions
+//-------------------------------------------
+// A bullish engulfing pattern requires:
+//  - The previous candle to be bearish (close[1] < open[1])
+//  - The current candle's close to exceed the previous candle's open (close > open[1])
+//  - The current candle's open to be below the previous candle's close (open < close[1])
+isBullishEngulfing = close[1] < open[1] and close > open[1] and open < close[1]
+
+// RSI Calculation
+rsiValue = ta.rsi(close, rsiLength)
+
+//-------------------------------------------
+// Orders
+//-------------------------------------------
+// Enter a long position on a bullish engulfing pattern
+if isBullishEngulfing
+    strategy.entry("Long", strategy.long)
+
+// Close the long position when RSI is above the specified threshold
+if rsiValue > rsiExitThreshold
+    strategy.close("Long")

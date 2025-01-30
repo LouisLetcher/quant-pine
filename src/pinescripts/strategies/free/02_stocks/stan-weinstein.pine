@@ -1,0 +1,66 @@
+//@version=6
+strategy("Stocks - Stan Weinstein Stage 2 Breakout Strategy", shorttitle = "Stocks - Stan Weinstein Stage 2", overlay=false, default_qty_type = strategy.percent_of_equity, default_qty_value= 100)
+
+//-------------------------------------------
+// Inputs
+//-------------------------------------------
+comparativeTickerId = input.symbol("SPY",         title="Comparative Symbol")
+rsPeriod            = input.int(50,               title="RS Lookback Period", minval=1)
+volumeMaLength      = input.int(5,                title="Volume MA Length",   minval=1)
+priceMaLength       = input.int(30,               title="Price MA Length",    minval=1)
+highestLookback     = input.int(52,               title="Lookback for Highest High", minval=1)
+
+//-------------------------------------------
+// Request Data
+//-------------------------------------------
+// We fetch both the current (base) symbol and the comparative symbol
+baseClose        = request.security(syminfo.tickerid, timeframe.period, close)
+comparativeClose = request.security(comparativeTickerId, timeframe.period, close)
+
+//-------------------------------------------
+// Relative Strength Calculation
+//-------------------------------------------
+// RS = (baseClose/baseClose[rsPeriod]) / (comparativeClose/comparativeClose[rsPeriod]) - 1
+// A value above 0 indicates the base asset is outperforming the comparative asset.
+rsValue = (baseClose / baseClose[rsPeriod]) / (comparativeClose / comparativeClose[rsPeriod]) - 1
+
+// Plot a dotted zero line for reference
+hline(0, color=color.black, linestyle=hline.style_dotted)
+
+// Plot the Relative Strength value
+plot(rsValue, title="RS", color=#1155CC)
+
+//-------------------------------------------
+// Indicators: Volume & Price MAs
+//-------------------------------------------
+// Simple moving average for volume
+volMA    = ta.sma(volume, volumeMaLength)
+// Simple moving average for price
+priceMA  = ta.sma(close, priceMaLength)
+
+//-------------------------------------------
+// Trade Conditions
+//-------------------------------------------
+// Highest high over the specified lookback (ignoring current bar with [1])
+highestHigh = ta.highest(high[1], highestLookback)
+
+// Long condition: 
+//  1. Price above its MA
+//  2. RS above 0
+//  3. Current volume above its MA
+//  4. Price breaking above recent highest high
+bool longEntryCondition = (close > priceMA) and (rsValue > 0) and (volume > volMA) and (close > highestHigh)
+
+// Exit condition when price crosses below its MA
+bool longExitCondition  = (close < priceMA)
+
+//-------------------------------------------
+// Orders
+//-------------------------------------------
+// If all conditions are met, enter a long
+if longEntryCondition
+    strategy.entry("Long", strategy.long)
+
+// If exit condition is met, close the long
+if longExitCondition
+    strategy.close("Long")

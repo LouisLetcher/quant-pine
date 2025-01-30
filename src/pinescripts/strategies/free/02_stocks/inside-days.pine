@@ -1,0 +1,28 @@
+//@version=6
+strategy("Stocks - Inside Day Strategy", shorttitle = "Stocks - Inside Day", overlay=true, default_qty_type = strategy.percent_of_equity, default_qty_value= 100)
+
+//-------------------------------------------
+// User Inputs
+//-------------------------------------------
+rsiLength       = input.int(5, "RSI Length", minval=1)
+overboughtLevel = input.float(80, "Overbought Threshold", minval=1)
+
+//-------------------------------------------
+// Conditions
+//-------------------------------------------
+// 'isInsideDay' checks that today's high-low is inside yesterday's high-low
+bool isInsideDay = high[1] > high and low[1] < low
+
+// Calculate RSI
+rsiValue = ta.rsi(close, rsiLength)
+
+//-------------------------------------------
+// Orders
+//-------------------------------------------
+// Enter a long position if it's an inside day
+if isInsideDay
+    strategy.entry("Long", strategy.long)
+
+// Close the long position if RSI is over the specified threshold
+if rsiValue > overboughtLevel
+    strategy.close("Long")
