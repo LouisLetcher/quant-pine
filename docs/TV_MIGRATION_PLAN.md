@@ -3,9 +3,14 @@
 Plan of record for aligning this repo with the quant-system strategy library and
 the tv-quant-lab execution platform. Companion documents:
 
-- `quant-system/docs/TRADINGVIEW_PORTABILITY.md` — classification of all 182
-  Python strategy modules (≈111 are TradingView-portable).
+- `tv-quant-lab/docs/TRADINGVIEW_PORTABILITY.md` — classification of all 182
+  quant-system Python strategy modules (≈111 are TradingView-portable).
 - `tv-quant-lab/docs/BOOTSTRAP_PLAN.md` — nightly backtest farm + signal service.
+
+quant-system is a **read-only research reference**: its Python modules are the
+rule source when writing Pine ports, but nothing is committed there and nothing
+here depends on its engine. All backtesting of Pine ports happens in the
+TradingView Strategy Tester (driven via the TV MCP servers in tv-quant-lab).
 
 ## Role of this repo
 
@@ -16,13 +21,14 @@ webhook-driven execution, backtesting, and the signal service live in
 tv-quant-lab. quant-system remains the research source of truth.
 
 ```
-quant-system (Python research, nightly backtests)
+quant-system (Python research — read-only rule source)
      │  port (category A/B strategies)
      ▼
 quant-pine (public funnel: free .pine MIT + premium specs)
      │  same code + alert payloads
      ▼
-tv-quant-lab (private ops: manifests, farm, webhook → Stripe/Telegram)
+tv-quant-lab (private ops: manifests, TV Strategy Tester farm,
+              webhook → Stripe/Telegram)
 ```
 
 ## Current state (2026-07)
@@ -140,7 +146,8 @@ Category C strategies (cross-sectional, pairs, curve panels — ~41 modules) are
 
 1. `.pine` compiles clean on TradingView (v6, no warnings).
 2. Alert payloads validate against `alert_schema.json`.
-3. Strategy Tester run on the manifest symbol/timeframe roughly matches the
-   Python twin's nightly backtest direction (parity: same trade count ±20%,
-   same sign of total return over the shared window).
+3. Strategy Tester run on the manifest symbol/timeframe is the authoritative
+   validation (results captured into the tv-quant-lab farm via the TV Desktop
+   MCP). Sanity parity vs the quant-system Python rules: same entry/exit logic
+   by inspection, same sign of total return over a shared window.
 4. Listed in README index; manifest added/updated in tv-quant-lab.
